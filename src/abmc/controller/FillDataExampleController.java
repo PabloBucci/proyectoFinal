@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -102,9 +103,10 @@ public class FillDataExampleController implements Initializable {
     }
     
     @FXML
-    private void grabarPersona(ActionEvent event) {
-        Persona  p = new Persona(null, lbl_name_value.getText(), lbl_lastname_value.getText(), lbl_address_value.getText(),
+    private void grabarPersona(ActionEvent event) throws SQLException {
+        Persona  p = new Persona(UUID.randomUUID().hashCode(), lbl_name_value.getText(), lbl_lastname_value.getText(), lbl_address_value.getText(),
         lbl_phone_value.getText(), lbl_cell_value.getText(), lbl_email_value.getText());
+        personaDao.add(p);
         tbl_personas.getItems().add(p);
     }
 
@@ -134,6 +136,7 @@ public class FillDataExampleController implements Initializable {
             try {
 
                 int selectedIndex = tbl_personas.getSelectionModel().getSelectedIndex();
+                personaDao.delete(p);
                 tbl_personas.getItems().remove(selectedIndex);
             } catch (Exception ex) {
                 // Muestra el mensaje de error

@@ -8,6 +8,7 @@ package abmc.dao;
 import abmc.model.Persona;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,7 +56,32 @@ public class PersonaDao {
     }
     
     public void add(Persona persona)throws SQLException  {
-        
+                // Arma la sentencia de inserción
+        String laInsercion = "INSERT INTO personas "
+                + "(id, nombre, apellido, direccion, telefono, celular, email) "
+                + " VALUES (?,?,?,?,?,?,?)";
+
+        // Informa la insercion a realizar
+        System.out.println(">>SQL: " + laInsercion);
+
+        try ( // Ejecuta la insercion
+                PreparedStatement ps = connection.prepareStatement(laInsercion, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, persona.getId());
+            ps.setString(2, persona.getNombre());
+            ps.setString(3, persona.getApellido());
+            ps.setString(4, persona.getDireccion());
+            ps.setString(5, persona.getTelefono());
+            ps.setString(6, persona.getCelular());
+            ps.setString(7, persona.getEmail());
+            ps.execute();
+            // Obtiene el ID generado
+            Integer id = null;
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                id = rs.getInt(1);
+            }
+            // Cierra el Statement
+        }
     }
 
     public void update(Persona persona)throws SQLException  {
@@ -63,6 +89,16 @@ public class PersonaDao {
     }
 
     public void delete(Persona persona)throws SQLException  {
-        
+                // Arma la sentencia de eliminacion
+        String laEliminacion = "DELETE FROM personas WHERE id = " + persona.getId();
+
+        // Informa la eliminacion a realizar
+        System.out.println(">>SQL: " + laEliminacion);
+
+        try ( // Ejecuta la eliminacion
+                Statement stmtEliminacion = connection.createStatement()) {
+            stmtEliminacion.execute(laEliminacion);
+            // Cierra el Statement
+        }
     }    
 }
